@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MSQ page harness</title>
+  <style>
+    body { font: 14px system-ui, sans-serif; background: #fff; color: #232629; margin: 24px; }
+    .q { border-bottom: 1px solid #e3e6e8; padding: 14px 0; }
+    .q h2 { font-size: 15px; margin: 0 0 6px; color: #0074cc; font-weight: 400; }
+    .tags a { display: inline-block; padding: 4px 6px; margin-right: 4px; border-radius: 4px;
+              background: #e1ecf4; color: #39739d; font-size: 12px; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Harness: tag chips across several items</h1>
+  <p>Loads the real extension sources and registers a file:// test adapter, so
+     the controller, engine, command bridge and cleanup are exercised as shipped.</p>
+
+  <div id="list">
+    <div class="q">
+      <h2>First question</h2>
+      <div class="tags">
+        <a href="/questions/tagged/ajax">ajax</a>
+        <a href="/questions/tagged/timber">timber</a>
+      </div>
+    </div>
+    <div class="q">
+      <h2>Second question</h2>
+      <div class="tags">
+        <a href="/questions/tagged/networkx">networkx</a>
+        <a href="/questions/tagged/plotly-dash">plotly-dash</a>
+      </div>
+    </div>
+    <div class="q">
+      <h2>Third question</h2>
+      <div class="tags">
+        <a href="/questions/tagged/javascript">javascript</a>
+        <a href="/questions/tagged/http-redirect">http-redirect</a>
+        <a href="/questions/tagged/anchor">anchor</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real sources, same order as the popup injects them -->
+  <script src="../../src/core/debug.js"></script>
+  <script src="../../src/core/registry.js"></script>
+  <script src="../../src/core/siteAdapterEngine.js"></script>
+  <script src="../../src/ui/styles.js"></script>
+  <script src="../../src/ui/actionBar.js"></script>
+  <script src="../../src/popup/popupModel.js"></script>
+
+  <script>
+    // A catalog-shaped config for this harness page (file:// has no hostname).
+    MSQ.registerAdapter(MSQ.createSiteAdapter({
+      id: 'harness',
+      label: 'Harness',
+      host: /^$|localhost/,
+      tagPattern: /\/questions\/tagged\/([^\/?"&+]+)$/,
+      buildUrl: (vals) => 'https://stackoverflow.com/questions/tagged/' + vals.join('+')
+    }));
+  </script>
+
+  <script src="../../src/content/main.js"></script>
+</body>
+</html>

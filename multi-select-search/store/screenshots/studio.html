@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Store screenshot studio — 1280×800</title>
+<!--
+  Renders store screenshots at exactly 1280×800 using the extension's REAL UI:
+  the popup is an iframe of src/popup/popup.html, and the in-page chips/action
+  bar are built by the extension's own components and stylesheet.
+
+  The surrounding page content is deliberately generic (no site logos or
+  branding) so the screenshots demonstrate the extension without imitating
+  anyone's trademarks.
+
+  If you can, a genuine capture of the extension running on a real site is
+  still the most convincing screenshot — use this studio for the framing that
+  a raw capture can't give you (captions, consistent sizing).
+
+  HOW TO CAPTURE
+    python3 -m http.server 8765 --directory "multi-select-search"
+    open http://localhost:8765/store/screenshots/studio.html
+  Then per scene: DevTools → Cmd+Shift+P → "Capture node screenshot" with the
+  .scene element selected (pixel-exact 1280×800), or Cmd+Shift+4 + Space.
+-->
+<style>
+  body { margin: 0; padding: 24px; background: #0c0d10; font-family: Roboto, Arial, sans-serif; }
+  .scene {
+    position: relative; width: 1280px; height: 800px; margin: 0 auto 32px;
+    overflow: hidden; background: #16181c; color: #e9eaec;
+  }
+  .caption { position: absolute; left: 64px; top: 56px; max-width: 640px; z-index: 5; }
+  .caption h2 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .caption p { font-size: 19px; line-height: 1.5; margin: 0; color: #b9bec7; }
+  .popup-frame {
+    position: absolute; right: 64px; top: 56px; width: 320px; height: 340px;
+    border: 0; border-radius: 12px; box-shadow: 0 24px 60px rgba(0,0,0,.55);
+    background: #16181c; z-index: 6;
+  }
+  .stage {
+    position: absolute; left: 64px; right: 440px; top: 210px; bottom: 56px;
+    background: #1f2228; border: 1px solid #2c3038; border-radius: 12px; padding: 24px;
+    overflow: hidden;
+  }
+  .stage.light { background: #fff; border-color: #e3e6e8; color: #232629; }
+  .poster-row { display: flex; gap: 18px; margin-bottom: 18px; }
+  .poster { width: 118px; height: 170px; border-radius: 8px; background: linear-gradient(160deg,#3a3f4b,#22252c); flex: none; }
+  .meta h3 { margin: 4px 0 8px; font-size: 26px; }
+  .meta .sub { color: #9aa0aa; font-size: 14px; margin-bottom: 16px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips a {
+    display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid #4a5059; color: #e9eaec; text-decoration: none; font-size: 14px;
+  }
+  .qa .item { padding: 14px 0; border-bottom: 1px solid #e3e6e8; }
+  .qa .item:last-child { border-bottom: 0; }
+  .qa h4 { margin: 0 0 6px; font-size: 17px; color: #0a5ba8; font-weight: 400; }
+  .qa .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .qa .tags a {
+    padding: 4px 8px; border-radius: 4px; background: #e1ecf4; color: #39739d;
+    font-size: 12px; text-decoration: none;
+  }
+  .results { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .result { display: flex; gap: 12px; align-items: center; }
+  .result .thumb { width: 54px; height: 78px; border-radius: 6px; background: linear-gradient(160deg,#3a3f4b,#22252c); flex: none; }
+  .result .t { font-size: 15px; }
+  .result .y { color: #9aa0aa; font-size: 13px; }
+  .count-pill {
+    display: inline-block; margin-bottom: 16px; padding: 6px 14px; border-radius: 999px;
+    background: rgba(109,90,230,.18); border: 1px solid rgba(139,123,255,.5); color: #c3baff;
+    font-size: 14px;
+  }
+  .center-popup { position: absolute; left: 50%; top: 190px; transform: translateX(-50%);
+                  width: 320px; height: 430px; border: 0; border-radius: 12px;
+                  box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+</style>
+</head>
+<body>
+
+<!-- ── Scene 1 ─────────────────────────────────────────────────────── -->
+<div class="scene" id="scene1">
+  <div class="caption">
+    <h2>Tick several tags at once</h2>
+    <p>The tags already on the page become checkboxes. No new interface to learn.</p>
+  </div>
+  <iframe class="popup-frame" src="../../src/popup/popup.html" id="pop1"></iframe>
+  <div class="stage">
+    <div class="poster-row">
+      <div class="poster"></div>
+      <div class="meta">
+        <h3>A film you're looking at</h3>
+        <div class="sub">1994 · 2h 22m</div>
+        <div class="chips" id="chips1"></div>
+        <div id="bar1"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scene 2 ─────────────────────────────────────────────────────── -->
+<div class="scene" id="scene2">
+  <div class="caption">
+    <h2>Mix tags from different items</h2>
+    <p>Selections aren't tied to one row. Combine tags across a whole list, and the popup keeps the full basket.</p>
+  </div>
+  <iframe class="popup-frame" src="../../src/popup/popup.html" id="pop2"></iframe>
+  <div class="stage light qa" id="qa2">
+    <div class="item">
+      <h4>How do I render results without stripping table rows?</h4>
+      <div class="tags"><a href="/questions/tagged/ajax">ajax</a><a href="/questions/tagged/templates">templates</a></div>
+    </div>
+    <div class="item">
+      <h4>Selecting multiple nodes in a network graph</h4>
+      <div class="tags"><a href="/questions/tagged/networkx">networkx</a><a href="/questions/tagged/plotly-dash">plotly-dash</a></div>
+    </div>
+    <div class="item">
+      <h4>Is redirecting to a URL with a fragment allowed?</h4>
+      <div class="tags"><a href="/questions/tagged/javascript">javascript</a><a href="/questions/tagged/http-redirect">http-redirect</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scene 3 ─────────────────────────────────────────────────────── -->
+<div class="scene" id="scene3">
+  <div class="caption">
+    <h2>One search, all of them together</h2>
+    <p>A true intersection — only items carrying every tag you picked. Verified against real result counts, not guessed.</p>
+  </div>
+  <div class="stage" style="right:64px; top:250px;">
+    <span class="count-pill">Period Drama 5,162 &nbsp;∩&nbsp; Prison Drama 309 &nbsp;→&nbsp; 31 results</span>
+    <div class="results">
+      <div class="result"><div class="thumb"></div><div><div class="t">First matching title</div><div class="y">1994</div></div></div>
+      <div class="result"><div class="thumb"></div><div><div class="t">Second matching title</div><div class="y">1993</div></div></div>
+      <div class="result"><div class="thumb"></div><div><div class="t">Third matching title</div><div class="y">1999</div></div></div>
+      <div class="result"><div class="thumb"></div><div><div class="t">Fourth matching title</div><div class="y">1996</div></div></div>
+      <div class="result"><div class="thumb"></div><div><div class="t">Fifth matching title</div><div class="y">1963</div></div></div>
+      <div class="result"><div class="thumb"></div><div><div class="t">Sixth matching title</div><div class="y">1979</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scene 4 ─────────────────────────────────────────────────────── -->
+<div class="scene" id="scene4">
+  <div class="caption" style="left:50%; transform:translateX(-50%); text-align:center; max-width:820px;">
+    <h2>16 sites verified — ask for more</h2>
+    <p>Only sites with a real combined search are included. Missing one? Request it in one click.</p>
+  </div>
+  <iframe class="center-popup" src="../../src/popup/popup.html" id="pop4" style="height:250px"></iframe>
+</div>
+
+<!-- Real extension sources -->
+<script src="../../src/core/debug.js"></script>
+<script src="../../src/core/registry.js"></script>
+<script src="../../src/ui/styles.js"></script>
+<script src="../../src/ui/actionBar.js"></script>
+<script>
+  // The extension's own stylesheet drives the chips and the action bar.
+  const style = document.createElement('style');
+  style.textContent = MSQ.CSS;
+  document.head.appendChild(style);
+
+  // Scene 1 chips, marked up exactly as the content script does.
+  const CHIPS = [
+    ['Epic', false], ['Period Drama', true], ['Prison Drama', true],
+    ['Psychological Drama', true], ['Drama', false]
+  ];
+  const chips1 = document.getElementById('chips1');
+  for (const [label, selected] of CHIPS) {
+    const a = document.createElement('a');
+    a.href = '#';
+    a.className = 'msq-selectable' + (selected ? ' msq-selected' : '');
+    a.setAttribute('role', 'checkbox');
+    a.setAttribute('aria-checked', String(selected));
+    const box = document.createElement('span');
+    box.className = 'msq-checkbox';
+    box.textContent = selected ? '✓' : '';
+    a.append(box, document.createTextNode(label));
+    chips1.appendChild(a);
+  }
+  const bar1 = MSQ.ui.createActionBar({ onClear() {}, onFind() {}, onExit() {} });
+  bar1.setCount(3);
+  document.getElementById('bar1').appendChild(bar1.el);
+
+  // Scene 2: tick tags belonging to three different questions.
+  const PICKED2 = ['ajax', 'plotly-dash', 'http-redirect'];
+  for (const a of document.querySelectorAll('#qa2 .tags a')) {
+    const on = PICKED2.includes(a.textContent.trim());
+    a.classList.add('msq-selectable');
+    if (on) a.classList.add('msq-selected');
+    const box = document.createElement('span');
+    box.className = 'msq-checkbox';
+    box.textContent = on ? '✓' : '';
+    a.prepend(box);
+  }
+
+  // Drive the real popup iframes once they've loaded.
+  function drivePopup(id, state) {
+    const frame = document.getElementById(id);
+    frame.addEventListener('load', () => frame.contentWindow.applyState(state));
+  }
+  drivePopup('pop1', {
+    supported: true, active: true, siteLabel: 'IMDb', host: 'imdb.com',
+    items: [
+      { id: 'i:1', label: 'Period Drama' },
+      { id: 'i:2', label: 'Prison Drama' },
+      { id: 'i:3', label: 'Psychological Drama' }
+    ],
+    searchUrl: 'https://www.imdb.com/search/title/?interests=in0000083,in0000085,in0000086'
+  });
+  drivePopup('pop2', {
+    supported: true, active: true, siteLabel: 'Stack Overflow', host: 'stackoverflow.com',
+    items: [
+      { id: 't:ajax', label: 'ajax' },
+      { id: 't:plotly-dash', label: 'plotly-dash' },
+      { id: 't:http-redirect', label: 'http-redirect' }
+    ],
+    searchUrl: 'https://stackoverflow.com/questions/tagged/ajax+plotly-dash+http-redirect'
+  });
+  drivePopup('pop4', { supported: false, active: false, host: 'example.com', items: [] });
+</script>
+</body>
+</html>

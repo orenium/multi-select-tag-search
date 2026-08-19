@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="head">
+    <h1>Multi-select tag search</h1>
+    <span id="site" class="site-badge" hidden></span>
+  </header>
+
+  <main>
+    <p id="message" class="message" hidden></p>
+
+    <section id="selection" hidden>
+      <div class="selection-head">
+        <span id="count" class="count">0 selected</span>
+        <button type="button" id="clear" class="link-btn" hidden>Clear all</button>
+      </div>
+      <ul id="items" class="items"></ul>
+      <p id="hint" class="hint"></p>
+    </section>
+
+    <button type="button" id="request-site" class="request-btn" hidden>
+      Ask for this site to be added
+    </button>
+  </main>
+
+  <footer class="foot">
+    <button type="button" id="cta" class="cta" disabled>Find matches</button>
+    <div class="foot-row">
+      <button type="button" id="exit" class="link-btn" hidden>Turn off multi-select</button>
+      <button type="button" id="enable" class="link-btn" hidden>Turn on multi-select</button>
+      <span class="privacy">Nothing is stored or sent.</span>
+    </div>
+    <div class="foot-row foot-links">
+      <button type="button" id="feedback" class="link-btn">Send feedback</button>
+      <button type="button" id="suggest" class="link-btn">Suggest a site</button>
+    </div>
+  </footer>
+
+  <script src="popupModel.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

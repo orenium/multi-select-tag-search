@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Select Tag Search — pick several tags, get one combined search</title>
+<meta name="description" content="A Chrome extension that turns the tags already on a page into checkboxes, then opens one search for all of them together.">
+<style>
+  :root { color-scheme: light dark; --accent: #6d5ae6; --bg: #ffffff; --fg: #16181c;
+          --muted: #5b6270; --line: #e4e6ea; --soft: #f7f7fb; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #101216; --fg: #e9eaec; --muted: #9aa0aa; --line: #272b33; --soft: #171a20; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 60rem; margin: 0 auto; padding: 0 1.25rem; }
+  header { padding: 5rem 0 3rem; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; margin: 0 0 1rem; letter-spacing: -0.02em; }
+  .lede { font-size: 1.2rem; color: var(--muted); max-width: 40rem; margin: 0 0 2rem; }
+  .cta { display: inline-block; padding: 0.8rem 1.5rem; border-radius: 10px;
+         background: var(--accent); color: #fff; font-weight: 600; text-decoration: none; }
+  .cta:hover { background: #5c4bd4; }
+  .note { color: var(--muted); font-size: 0.95rem; margin-top: 0.75rem; }
+  section { padding: 3rem 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 1.6rem; margin: 0 0 1rem; letter-spacing: -0.01em; }
+  .steps { list-style: none; counter-reset: s; padding: 0; display: grid; gap: 1rem; }
+  .steps li { counter-increment: s; padding-left: 2.6rem; position: relative; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 0;
+    width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--accent);
+    color: #fff; font-size: 0.95rem; display: grid; place-items: center; font-weight: 600; }
+  .proof { background: var(--soft); border: 1px solid var(--line); border-radius: 12px;
+           padding: 1.25rem 1.5rem; }
+  .proof code { font-size: 1rem; }
+  .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.5rem; }
+  .group h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.07em;
+              color: var(--muted); margin: 0 0 0.6rem; }
+  .group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  .group li { display: grid; gap: 0.1rem; font-size: 0.95rem; }
+  .group li span { color: var(--muted); font-size: 0.85rem; }
+  .privacy-points { display: grid; gap: 0.6rem; padding-left: 1.2rem; color: var(--muted); }
+  footer { padding: 3rem 0 5rem; border-top: 1px solid var(--line); color: var(--muted);
+           font-size: 0.9rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Pick several tags. Get one search.</h1>
+    <p class="lede">Sites let you click one tag at a time. This Chrome extension turns
+      the tags already on the page into checkboxes, then opens the one search that
+      finds only the items matching <em>all</em> of them.</p>
+    <a class="cta" href="#install">Get the extension</a>
+    <p class="note">Free · no account · nothing is stored or sent anywhere</p>
+  </header>
+
+  <section>
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li>Open a supported page — the toolbar icon lights up.</li>
+      <li>Click the icon. Every tag on the page gets a checkbox.</li>
+      <li>Tick two or more. They can come from different items on the same page.</li>
+      <li>Click <strong>Find matches</strong>. Results open in a new tab; your page stays put.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>A true intersection, not a word search</h2>
+    <p>This is the part we refuse to fake. For every supported site we measured real
+      result counts to confirm the combined search returns only items carrying
+      <em>all</em> the selected tags.</p>
+    <p class="proof">On IMDb, <code>Period Drama</code> has <strong>5,162</strong> titles and
+      <code>Prison Drama</code> has <strong>309</strong>. Together they return
+      <strong>31</strong>. That's an intersection.</p>
+    <p>Sites that have clickable tags but no true combined search were left out on
+      purpose, rather than shipped with a word-soup search that quietly returns the
+      wrong thing.</p>
+  </section>
+
+  <section>
+    <h2>Where it works today</h2>
+    <p class="note" style="margin-top:0">16 sites verified. 28 more are being checked.</p>
+    <div class="groups">
+      <div class="group">
+        <h3>Movies &amp; TV</h3>
+        <ul>
+          <li><strong>IMDb</strong><span>Interests on a title page → Titles matching every interest at once</span></li>
+          <li><strong>Letterboxd</strong><span>Genres on a film page → Films in all those genres at once</span></li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Game stores</h3>
+        <ul>
+          <li><strong>Steam</strong><span>Tags on a game page → Games sharing all those tags</span></li>
+          <li><strong>itch.io</strong><span>Tags on a game page → Games tagged with all of them</span></li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Developer Q&amp;A</h3>
+        <ul>
+          <li><strong>Stack Overflow</strong><span>Tags on questions → Questions carrying all those tags</span></li>
+          <li><strong>Super User</strong><span>Tags on questions → Questions carrying all those tags</span></li>
+          <li><strong>Server Fault</strong><span>Tags on questions → Questions carrying all those tags</span></li>
+          <li><strong>Ask Ubuntu</strong><span>Tags on questions → Questions carrying all those tags</span></li>
+          <li><strong>Mathematics SE</strong><span>Tags on questions → Questions carrying all those tags</span></li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Code &amp; packages</h3>
+        <ul>
+          <li><strong>GitHub</strong><span>Repository topics → Repos matching every topic</span></li>
+          <li><strong>npm</strong><span>Package keywords → Packages matching every keyword</span></li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Fanfiction &amp; writing</h3>
+        <ul>
+          <li><strong>Archive of Our Own</strong><span>Tags on a work → Works tagged with all of them</span></li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Music</h3>
+        <ul>
+          <li><strong>Discogs</strong><span>Genres and styles on a release → Releases matching every genre/style</span></li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Academic &amp; research</h3>
+        <ul>
+          <li><strong>arXiv</strong><span>Subject categories on a paper → Papers cross-listed in all of them</span></li>
+          <li><strong>PubMed</strong><span>MeSH terms on an article → Articles indexed under all those terms</span></li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>Image boards</h3>
+        <ul>
+          <li><strong>Safebooru</strong><span>Tags on a post → Posts carrying all those tags</span></li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:2rem">Missing a site? The extension has a
+      <strong>Suggest a site</strong> button that opens a pre-filled email — or write to
+      <a href="mailto:oren.broshi@gmail.com">oren.broshi@gmail.com</a>.</p>
+  </section>
+
+  <section>
+    <h2>Privacy, plainly</h2>
+    <ul class="privacy-points">
+      <li>No accounts, no analytics, no telemetry, no server of any kind.</li>
+      <li>Nothing is stored — not your selections, not your history. No cookies, no local storage.</li>
+      <li>Nothing about the pages you visit is sent anywhere or kept — when you
+          activate it, the current page is read locally to see if the site is
+          supported, and that stays in your browser.</li>
+      <li>It only runs on a page after you click its icon.</li>
+      <li>The only network request it causes is the results tab you asked for.</li>
+    </ul>
+    <p><a href="privacy.html">Read the full privacy policy</a></p>
+  </section>
+
+  <section id="install">
+    <h2>Get it</h2>
+    <p>Install from the Chrome Web Store, pin the icon to your toolbar, and open any
+      supported site.</p>
+    <p class="note">Store link goes here once the listing is live.</p>
+  </section>
+
+  <footer>
+    <p>Multi-Select Tag Search is an independent tool. It is not affiliated with,
+      endorsed by, or sponsored by any of the websites named on this page. All product
+      names and trademarks are the property of their respective owners.</p>
+    <p>Questions: <a href="mailto:oren.broshi@gmail.com">oren.broshi@gmail.com</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
