@@ -56,17 +56,20 @@ Sites that have clickable tags but no true combined search were deliberately
 left out rather than shipped with a word-soup search that quietly returns the
 wrong thing.
 
-WHERE IT WORKS TODAY
+WHERE IT WORKS TODAY (23 sites)
 
-Movies & TV: IMDb, Letterboxd
+Movies & TV: IMDb, Letterboxd, MyAnimeList, AniList
 Games: Steam, itch.io
 Developer Q&A: Stack Overflow, Super User, Server Fault, Ask Ubuntu,
   Mathematics Stack Exchange
 Code: GitHub, npm
+Books: Royal Road
 Writing: Archive of Our Own
-Music: Discogs
+Music: Discogs, MusicBrainz
+Photos: Flickr
+Art: pixiv
 Research: arXiv, PubMed
-Images: Safebooru
+Images: Safebooru, Gelbooru
 
 More are being verified. If you want a site added, use "Suggest a site" in the
 popup — it opens a pre-filled email draft you can edit or discard.
