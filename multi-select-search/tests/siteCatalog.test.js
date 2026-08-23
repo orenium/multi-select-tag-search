@@ -216,6 +216,90 @@ test('safebooru: tags join with + (space-separated AND)', () => {
     'https://safebooru.org/index.php?page=post&s=list&tags=landscape+sky');
 });
 
+test('gelbooru: shares the safebooru Gelbooru-engine URL shape', () => {
+  const a = adapterFor('gelbooru');
+  const items = [
+    a.extractItem(fakeAnchor('index.php?page=post&s=list&tags=1girl', '1girl')),
+    a.extractItem(fakeAnchor('index.php?page=post&s=list&tags=solo', 'solo'))
+  ];
+  assert.strictEqual(a.buildSearchUrl(items),
+    'https://gelbooru.com/index.php?page=post&s=list&tags=1girl+solo');
+});
+
+test('myanimelist: anime pages, genre ids join with comma', () => {
+  const a = adapterFor('myanimelist');
+  assert.ok(a.matches('https://myanimelist.net/anime/5114'));
+  const items = [
+    a.extractItem(fakeAnchor('/anime/genre/1/Action', 'Action')),
+    a.extractItem(fakeAnchor('/anime/genre/8/Drama', 'Drama'))
+  ];
+  assert.strictEqual(a.buildSearchUrl(items),
+    'https://myanimelist.net/anime.php?genres=1,8');
+});
+
+test('anilist: matches either genre-path or ?genres= chip form', () => {
+  const a = adapterFor('anilist');
+  assert.ok(a.matches('https://anilist.co/anime/1535/Death-Note/'));
+  const items = [
+    a.extractItem(fakeAnchor('/search/anime/Mystery', 'Mystery')),
+    a.extractItem(fakeAnchor('/search/anime?genres=Crime', 'Crime'))
+  ];
+  assert.strictEqual(a.buildSearchUrl(items),
+    'https://anilist.co/search/anime?genres=Mystery&genres=Crime');
+});
+
+test('royalroad: fiction pages, repeated tagsAdd param', () => {
+  const a = adapterFor('royalroad');
+  assert.ok(a.matches('https://www.royalroad.com/fiction/21220/mother-of-learning'));
+  const items = [
+    a.extractItem(fakeAnchor('/fictions/search?tagsAdd=fantasy', 'Fantasy')),
+    a.extractItem(fakeAnchor('/fictions/search?tagsAdd=litrpg', 'LitRPG'))
+  ];
+  assert.strictEqual(a.buildSearchUrl(items),
+    'https://www.royalroad.com/fictions/search?tagsAdd=fantasy&tagsAdd=litrpg');
+});
+
+test('musicbrainz: release-group pages, tag:"a" AND tag:"b" Lucene query', () => {
+  const a = adapterFor('musicbrainz');
+  assert.ok(a.matches('https://musicbrainz.org/release-group/f5093c06-23e3-404f-aeaa-40f72885ee3a'));
+  const items = [
+    a.extractItem(fakeAnchor('/tag/progressive%20rock', 'progressive rock')),
+    a.extractItem(fakeAnchor('/tag/concept%20album', 'concept album'))
+  ];
+  const url = a.buildSearchUrl(items);
+  assert.ok(url.startsWith('https://musicbrainz.org/search?type=release_group&method=advanced&query='));
+  assert.strictEqual(decodeURIComponent(url.split('query=')[1]),
+    'tag:"progressive rock" AND tag:"concept album"');
+});
+
+test('flickr: photo pages, tags=a,b&tag_mode=all', () => {
+  const a = adapterFor('flickr');
+  assert.ok(a.matches('https://www.flickr.com/photos/torsten-reuschling/55440872075/'));
+  const items = [
+    a.extractItem(fakeAnchor('/photos/tags/sunset', 'sunset')),
+    a.extractItem(fakeAnchor('/photos/tags/winter', 'winter'))
+  ];
+  assert.strictEqual(a.buildSearchUrl(items),
+    'https://www.flickr.com/search/?tags=sunset,winter&tag_mode=all');
+});
+
+test('pixiv: artwork pages, space-joined (%20) tag segments', () => {
+  const a = adapterFor('pixiv');
+  assert.ok(a.matches('https://www.pixiv.net/en/artworks/148534552'));
+  const items = [
+    a.extractItem(fakeAnchor('/en/tags/%E9%A2%A8%E6%99%AF', 'scenery')),
+    a.extractItem(fakeAnchor('/en/tags/%E7%8C%AB', 'cat'))
+  ];
+  assert.strictEqual(a.buildSearchUrl(items),
+    'https://www.pixiv.net/tags/%E9%A2%A8%E6%99%AF%20%E7%8C%AB/artworks');
+});
+
+test('demoted sites (confirmed NOT AND) never register', () => {
+  for (const id of ['justwatch', 'gitlab', 'bandcamp', 'twitch', 'ravelry']) {
+    assert.strictEqual(byId(id).status, 'research', id + ' should be research (confirmed no AND mechanism)');
+  }
+});
+
 test('engine: duplicate values collapse; empty selection → null', () => {
   const a = adapterFor('github');
   const i = a.extractItem(fakeAnchor('/topics/react', 'react'));

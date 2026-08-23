@@ -101,16 +101,17 @@ are used here only to describe where the extension works.
 
 ## Screenshots (1280×800 PNG, up to 5 — at least 1 required)
 
-Generate them from `store/screenshots/studio.html` (see that file's header for
-capture instructions). Suggested set, in order:
+Ready in `store/screenshots/`, all exactly 1280×800, captured from the real
+extension on the live sites (`node tools/captureScreenshots.js` regenerates
+them). Upload in this order:
 
-1. IMDb title page, three interests ticked, popup open showing all three.
-2. Stack Overflow question list with tags ticked across different questions —
+1. `01-imdb-select.png` — IMDb title page, three interests ticked, action bar.
+2. `04-popup-overview.png` — the popup holding all three tags, with the CTA.
+3. `03-stackoverflow-cross-item.png` — tags ticked across different questions,
    the cross-item case the in-page bar alone can't show.
-3. The results tab, showing the intersection actually worked.
-4. The popup on an unsupported site, offering "Ask for this site to be added".
-   (The full site list is intentionally not in the extension — it lives in the
-   description above, which is the one place that can't go stale.)
+4. `02-imdb-results.png` — the combined results, proving the intersection.
+
+The store rejects any other pixel size, including 2× retina captures.
 
 ## Small promo tile (440×280 PNG, optional but recommended)
 

@@ -216,20 +216,29 @@ HTML block for the landing page) is generated into
 
 The catalog (`src/adapters/siteCatalog.js`) holds ~100 sites in three states:
 
-- **verified** (active out of the box) — the combined search was proven to be
-  a true AND intersection by comparing live result counts, and the tag-chip
-  DOM pattern was confirmed. Currently: **IMDb, Letterboxd, Stack Overflow,
-  Super User, Server Fault, Ask Ubuntu, Mathematics SE, GitHub, npm, Steam,
-  itch.io, Archive of Our Own, Discogs, arXiv, PubMed, Safebooru.**
-- **draft** (off by default) — the mechanism is drafted from strong evidence
-  (often the same engine as a verified site: Gelbooru/Rule34/e621 share
-  Safebooru's engine; Danbooru is Cloudflare-walled) but was not verified
-  live. Enable all drafts for testing by setting `MSQ.ENABLE_DRAFT_SITES =
-  true` in `src/core/debug.js`, then reload the extension.
+- **verified** (active out of the box, 23 sites) — the combined search was
+  proven to be a true AND intersection by comparing live result counts, and
+  the tag-chip DOM pattern was confirmed. Currently: **IMDb, Letterboxd,
+  MyAnimeList, AniList, Steam, itch.io, Stack Overflow, Super User, Server
+  Fault, Ask Ubuntu, Mathematics SE, GitHub, npm, Royal Road, Archive of Our
+  Own, Discogs, MusicBrainz, Flickr, pixiv, Gelbooru, arXiv, PubMed,
+  Safebooru.** Run `SUPPORTED_SITES.md` for the evidence behind each.
+- **draft** (off by default, 16 sites) — the mechanism is drafted from strong
+  evidence but blocked from live verification (usually Cloudflare/anti-bot,
+  e.g. PyPI, RateYourMusic, Nexus Mods, LibraryThing, Scribble Hub, Zerochan)
+  or needs a real-browser check curl can't do (TMDB, Trakt — their server HTML
+  is a JS shell, which proves nothing either way). Enable all drafts for
+  testing with `MSQ.ENABLE_DRAFT_SITES = true` in `src/core/debug.js`.
 - **research** — the site has clickable tags but **no known true-AND search
-  URL** (e.g. GOG's API measured as OR; Open Library's repeated `subject=`
-  measured as NOT AND; YouTube hashtags degrade to text relevance). Shipping
-  these would fake the intersection, so they stay documented-only.
+  URL**, confirmed by measurement rather than assumed. E.g. JustWatch's
+  `genres=a,b` is OR (combined ≈ sum); GitLab silently drops a second `topic`
+  param; Twitch drops the `/tags/x` path segment entirely; GOG's API is OR;
+  Open Library's repeated `subject=` is NOT AND; Amazon's `rh=` facets are a
+  real AND but the facet codes are opaque and per-category (and the site
+  already has native checkbox filtering, so the product's pitch doesn't
+  apply); Ravelry's search now redirects anonymous users to a login wall.
+  Shipping any of these would fake the intersection, so they stay
+  documented-only.
 
 ### Promoting a draft site to verified
 

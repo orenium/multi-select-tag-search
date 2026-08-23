@@ -116,16 +116,33 @@ dist/multi-select-tag-search-v1.0.0.zip
 
 ## STEP 6 — Screenshots
 
-At least one 1280×800 PNG is required.
+**Already generated** — four real captures of the extension running on the
+live sites, in `store/screenshots/`, each **exactly 1280×800**:
+
+| File | Shows |
+| --- | --- |
+| `01-imdb-select.png` | IMDb title page, three interests ticked, action bar |
+| `02-imdb-results.png` | The combined results — the intersection actually working |
+| `03-stackoverflow-cross-item.png` | Tags ticked across three different questions |
+| `04-popup-overview.png` | The popup with all three tags and the CTA |
+
+Upload them in that order — the first one becomes the listing's main image.
+
+To regenerate (after a UI change, say):
 
 ```bash
-python3 -m http.server 8765 --directory "multi-select-search"
-# open http://localhost:8765/store/screenshots/studio.html
+cd "/Users/oren/Documents/Multi-label selection/multi-select-search"
+node tools/captureScreenshots.js
 ```
 
-Capture each `.scene` (DevTools → Cmd+Shift+P → "Capture node screenshot" for a
-pixel-exact crop). Or take real screenshots of the extension running on IMDb
-and Stack Overflow — those are more convincing if you have them.
+It drives headless Chrome, injects the real extension into the live pages,
+ticks real tags, dismisses cookie/sign-in banners, and refuses to finish
+unless every file is exactly 1280×800.
+
+> **Size is the usual upload failure.** The store accepts only 1280×800 or
+> 640×400 — nothing else, including 2× "retina" captures (2560×1600) and
+> anything cropped by hand. Check with:
+> `node -e "const b=require('fs').readFileSync('FILE');console.log(b.readUInt32BE(16)+'x'+b.readUInt32BE(20))"`
 
 ## STEP 7 — Submit
 

@@ -56,7 +56,14 @@ const PITCH = {
   'discogs': ['Genres and styles on a release', 'Releases matching every genre/style'],
   'arxiv': ['Subject categories on a paper', 'Papers cross-listed in all of them'],
   'pubmed': ['MeSH terms on an article', 'Articles indexed under all those terms'],
-  'safebooru': ['Tags on a post', 'Posts carrying all those tags']
+  'safebooru': ['Tags on a post', 'Posts carrying all those tags'],
+  'myanimelist': ['Genres on an anime page', 'Anime matching every genre at once'],
+  'anilist': ['Genres and tags on an anime page', 'Anime matching all of them at once'],
+  'royalroad': ['Tags on a fiction page', 'Fictions tagged with all of them'],
+  'musicbrainz': ['Tags on a release', 'Releases matching every tag'],
+  'flickr': ['Tags on a photo', 'Photos carrying all those tags'],
+  'pixiv': ['Tags on an artwork', 'Artworks matching every tag'],
+  'gelbooru': ['Tags on a post', 'Posts carrying all those tags']
 };
 
 const verified = SITE_CATALOG.filter((c) => c.status === 'verified');
