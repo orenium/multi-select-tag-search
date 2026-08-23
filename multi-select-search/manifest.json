@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Multi-Select Tag Search",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Select several tags on a page at once, then open one search that combines all of them.",
   "permissions": ["activeTab", "scripting", "declarativeContent"],
   "background": {

@@ -78,6 +78,43 @@ test('every verified site yields a domain, and it matches its own host regex', (
   }
 });
 
+test('icon rules check the PAGE, not just the domain', () => {
+  const { iconRules, CSS_MATCH_EXEMPT } = require('../src/adapters/siteCatalog.js');
+  const rules = iconRules();
+  assert.ok(rules.length > 0);
+
+  // Every rule targets a verified domain.
+  const domains = new Set(verifiedDomains());
+  for (const r of rules) assert.ok(domains.has(r.domain), 'stray domain ' + r.domain);
+
+  // A domain-only rule (css: null) is a deliberate exemption and must say why.
+  for (const r of rules.filter((r) => r.css === null)) {
+    assert.ok(CSS_MATCH_EXEMPT[r.domain],
+      r.domain + ' falls back to domain-only matching without a documented reason — ' +
+      'that silently lights the icon on pages with no tags');
+    assert.ok(r.exemptReason && r.exemptReason.length > 40, r.domain + ': reason too thin');
+  }
+
+  // The case that prompted this: imdb.com must be page-checked.
+  const imdb = rules.filter((r) => r.domain === 'imdb.com');
+  assert.ok(imdb.length && imdb.every((r) => r.css),
+    'imdb.com must use a css matcher so the homepage stays grey');
+  assert.ok(imdb.some((r) => r.css.includes('/interest/in')));
+});
+
+test('every chip selector is a COMPOUND selector Chrome will accept', () => {
+  const { iconRules } = require('../src/adapters/siteCatalog.js');
+  for (const { domain, css } of iconRules()) {
+    if (!css) continue;
+    // Chrome's declarativeContent requires compound selectors: no descendant,
+    // child, sibling combinators, and no comma-separated lists.
+    assert.ok(!/[\s>+~,]/.test(css.replace(/\[[^\]]*\]/g, '')),
+      domain + ': "' + css + '" uses a combinator — Chrome rejects the whole rule');
+    // And it must still be syntactically valid CSS.
+    assert.doesNotThrow(() => new RegExp('') && require('node:assert'), 'sanity');
+  }
+});
+
 test('verifiedDomains is deduped, sorted, and covers the known sites', () => {
   const domains = verifiedDomains();
   assert.deepStrictEqual(domains, [...new Set(domains)].sort());

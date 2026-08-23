@@ -23,9 +23,18 @@ locally to pick an adapter; none of it is stored or sent anywhere.
 
 | Icon | Meaning |
 | --- | --- |
-| Muted slate mark | This site isn't one of the verified ones (the popup lists the ones that are) |
-| Vivid violet mark | This site is supported — click to start selecting |
+| Muted slate mark | Nothing to select **on this page** — either the site isn't verified, or it is but this particular page has no tags (an IMDb title page lights up; the IMDb homepage doesn't) |
+| Vivid violet mark | This page has selectable tags — click to start |
 | Violet badge with a number | How many tags you have selected right now |
+
+The check is per-page and happens **inside Chrome**: `declarativeContent` rules
+pair each verified domain with a CSS selector for that site's tag chips, and
+Chrome tests them against the rendered page itself. The extension is told only
+that a rule fired — it receives no URL and no page content.
+
+One deliberate exception: GitHub is matched by domain alone, because it hides
+repo topics below ~1000px and a CSS rule would grey the icon on a narrow window
+even though the extension still works there.
 
 ### The popup is the full picture
 

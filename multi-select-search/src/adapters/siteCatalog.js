@@ -24,6 +24,7 @@
     root.MSQ = root.MSQ || {};
     root.MSQ.SITE_CATALOG = root.MSQ.SITE_CATALOG || api.SITE_CATALOG;
     root.MSQ.verifiedDomains = api.verifiedDomains;
+    root.MSQ.iconRules = api.iconRules;
     api.registerAll(root.MSQ);
   }
 })(typeof self !== 'undefined' ? self : (typeof window !== 'undefined' ? window : null), function () {
@@ -43,6 +44,7 @@
       // /questions/tagged/x, /search) — all render the same tag chips.
       path: /^\/($|questions(\/|$)|search)/,
       tagPattern: /\/questions\/tagged\/([^\/?"&+]+)$/,
+      chipCss: ['a[href*="/questions/tagged/"]'],
       buildUrl: (vals) => 'https://' + host + '/questions/tagged/' + vals.join('+')
     };
   }
@@ -54,6 +56,7 @@
       id, label, category, status, evidence,
       host: new RegExp('(^|\\.)' + host.replace(/\./g, '\\.') + '$'),
       tagPattern: /[?&]tags=([^&"+ ]+)$/,
+      chipCss: ['a[href*="tags="]'],
       buildUrl: (vals) => 'https://' + host + '/index.php?page=post&s=list&tags=' + vals.join('+')
     };
   }
@@ -72,6 +75,10 @@
       id: 'imdb-ref', label: 'IMDb', category: 'movies-tv', status: 'verified',
       bespoke: true, // implemented in src/adapters/imdb/ (interests need custom classification)
       domains: ['imdb.com'], // no host regex here, so state it for the icon rules
+      // Verified live 2026-08-23: 15 visible matches on a title page, 0 on the
+      // IMDb homepage — the icon now greys out there instead of promising a
+      // mode that page can't offer.
+      chipCss: ['a[href*="/interest/in"]'],
       evidence: 'interests=a,b AND verified 2026-08-19: Period 5,162 ∩ Prison 309 → 31'
     },
     {
@@ -80,6 +87,7 @@
       host: /(^|\.)letterboxd\.com$/, path: /^\/film\//,
       containerSelector: '#tab-genres',
       tagPattern: /\/films\/genre\/([a-z0-9-]+)\/?$/,
+      chipCss: ['a[href*="/films/genre/"]'],
       buildUrl: (vals) => 'https://letterboxd.com/films/genre/' + vals.join('+') + '/'
     },
     {
@@ -87,6 +95,7 @@
       evidence: 'genre[]=a&genre[]=b AND verified 2026-08-19: Action alone and Drama alone each paginate past 1,900 titles; combined drops to 45-47 unique titles (comma form genres=a,b confirmed identical) — combined << min(singles)',
       host: /(^|\.)myanimelist\.net$/, path: /^\/(anime|manga)\/\d+/,
       tagPattern: /\/anime\/genre\/(\d+)\//,
+      chipCss: ['a[href*="/anime/genre/"]'],
       buildUrl: (vals) => 'https://myanimelist.net/anime.php?genres=' + vals.join(',')
     },
     {
@@ -94,6 +103,7 @@
       evidence: 'genre_in AND verified 2026-08-19 via the public GraphQL API (same one the site itself calls): 20/20 sampled results for Mecha+Romance carried BOTH genres. Item pages expose real chip hrefs at /search/anime/{genre} and ?genres={tag}; the combined-URL search page applies both as simultaneous active filters in its own UI.',
       host: /(^|\.)anilist\.co$/, path: /^\/(anime|manga)\//,
       tagPattern: /\/search\/anime\/([^\/?"]+)$|[?&]genres=([^&"]+)/,
+      chipCss: ['a[href*="/search/anime"]'],
       extractValue: (el, m) => m[1] || m[2],
       buildUrl: (vals) => 'https://anilist.co/search/anime?' + vals.map(v => 'genres=' + enc(v)).join('&')
     },
@@ -124,6 +134,7 @@
       evidence: 'search/?tags=87918,3964 AND verified 2026-08-19: Farming Sim 3,212 ∩ Pixel Graphics 41,821 → 934; numeric IDs read from InitAppTagModal JSON on app pages',
       host: /(^|\.)store\.steampowered\.com$/, path: /^\/app\/\d+/,
       tagPattern: /store\.steampowered\.com\/tags\/[a-z]+\/([^\/?"]+)/,
+      chipCss: ['a[href*="/tags/"]'],
       extractValue(el) {
         // Search needs numeric tag IDs; app pages embed name→id JSON.
         if (!window.__msqSteamTagMap) {
@@ -147,6 +158,7 @@
       evidence: 'path-composed filters; /games/tag-roguelike/tag-deck-builder page titled "Top games tagged deck-builder and Roguelike" (site-stated AND, 2026-08-19); chips itch.io/games/tag-SLUG on game pages',
       host: /(^|\.)itch\.io$/,
       tagPattern: /itch\.io\/games\/((?:tag|genre)-[a-z0-9-]+)$/,
+      chipCss: ['a[href*="/games/tag-"]', 'a[href*="/games/genre-"]'],
       buildUrl: (vals) => 'https://itch.io/games/' + vals.join('/')
     },
     { id: 'gog', label: 'GOG', category: 'gaming-stores', status: 'research',
@@ -197,6 +209,7 @@
       evidence: 'search?q=keywords:framework,middleware AND verified 2026-08-19: 38,054 ∩ 12,964 → 1,224; chips /search?q=keywords:SLUG on package pages',
       host: /(^|\.)npmjs\.com$/, path: /^\/package\//,
       tagPattern: /\/search\?q=keywords(?::|%3A)([^&"]+)$/,
+      chipCss: ['a[href*="keywords:"]', 'a[href*="keywords%3A"]'],
       buildUrl: (vals) => 'https://www.npmjs.com/search?q=' + enc('keywords:' + vals.join(','))
     },
     { id: 'pypi', label: 'PyPI', category: 'code', status: 'draft',
@@ -224,6 +237,7 @@
       evidence: 'fictions/search?tagsAdd=a&tagsAdd=b AND verified 2026-08-19 via pagination totals: Fantasy alone ~92,300 fictions, LitRPG alone ~22,580, combined ~19,380 — combined < min(singles); chips confirmed as /fictions/search?tagsAdd=SLUG on fiction pages',
       host: /(^|\.)royalroad\.com$/, path: /^\/fiction\/\d+/,
       tagPattern: /\/fictions\/search\?(?:.*&)?tagsAdd=([^&"]+)/,
+      chipCss: ['a[href*="tagsAdd="]'],
       buildUrl: (vals) => 'https://www.royalroad.com/fictions/search?' + vals.map(v => 'tagsAdd=' + enc(v)).join('&')
     },
     { id: 'storygraph', label: 'The StoryGraph', category: 'books', status: 'research',
@@ -235,6 +249,7 @@
       evidence: '/tags/Fluff/works + other_tag_names=Angst AND verified 2026-08-19: 3,217,599 → 1,076,516; chips /tags/NAME/works on work pages',
       host: /(^|\.)archiveofourown\.org$/, path: /^\/works\/\d+/,
       tagPattern: /^\/tags\/([^\/"]+)\/works$/,
+      chipCss: ['a[href*="/tags/"]'],
       buildUrl(vals) {
         const base = vals[0];
         const rest = vals.slice(1).map(ao3Unescape);
@@ -259,6 +274,7 @@
       evidence: 'search/?style_exact=Ambient&style_exact=Downtempo AND verified 2026-08-19: Ambient 454K+ releases → combined 58K+; chips /genre/X /style/Y on release pages (client-rendered DOM)',
       host: /(^|\.)discogs\.com$/, path: /^\/(release|master)\//,
       tagPattern: /^\/(genre|style)\/([^\/?"]+)/,
+      chipCss: ['a[href^="/genre/"]', 'a[href^="/style/"]'],
       extractValue: (el, m) => m[1] + ':' + decodeURIComponent(m[2]),
       buildUrl(vals) {
         const params = vals.map((v) => {
@@ -280,6 +296,7 @@
       evidence: '"tag:a AND tag:b" Lucene query AND verified 2026-08-19 via the public ws/2 API: tag:ambient 111,861 ∩ tag:downtempo 51,205 → 11,299 (combined well below min of singles). Chip hrefs confirmed live in a real browser on a release-group page (/tag/SLUG links, e.g. /tag/progressive%20rock) — item pages are behind a JS proof-of-work wall that blocks curl but resolves normally for real browsers.',
       host: /(^|\.)musicbrainz\.org$/, path: /^\/(release|release-group|artist)\//,
       tagPattern: /\/tag\/([^\/?"]+)/,
+      chipCss: ['a[href^="/tag/"]'],
       buildUrl: (vals) => 'https://musicbrainz.org/search?type=release_group&method=advanced&query=' + enc(vals.map(v => 'tag:"' + decodeURIComponent(v) + '"').join(' AND '))
     },
     { id: 'lastfm', label: 'Last.fm', category: 'music', status: 'research',
@@ -291,6 +308,7 @@
       evidence: 'search/?tags=a,b&tag_mode=all AND verified 2026-08-19: tags=sunset 978,795 ∩ tags=ocean 946,949 → 514,107 (from the "totalItems" value embedded next to apiParams in the search page\'s server-rendered JSON, not the paginated-fetch total which is capped at 4,000). Chip hrefs confirmed live on a real photo page (/photos/tags/SLUG).',
       host: /(^|\.)flickr\.com$/, path: /^\/photos\/[^\/]+\/\d+/,
       tagPattern: /\/photos\/tags\/([^\/?"]+)/,
+      chipCss: ['a[href*="/photos/tags/"]'],
       buildUrl: (vals) => 'https://www.flickr.com/search/?tags=' + vals.map((v) => enc(decodeURIComponent(v))).join(',') + '&tag_mode=all'
     },
     { id: 'unsplash', label: 'Unsplash', category: 'photos', status: 'research', notes: 'text search only' },
@@ -304,6 +322,7 @@
       evidence: '/tags/A%20B/artworks (space-separated tags) AND verified 2026-08-19: scenery (風景) 310,039 works ∩ cat (猫) 237,166 works → 3,787 combined — no login required. Chip hrefs confirmed live on a real artwork page (/tags/SLUG, e.g. /en/tags/%E9%A2%A8%E6%99%AF).',
       host: /(^|\.)pixiv\.net$/, path: /\/artworks\/\d+/,
       tagPattern: /\/tags\/([^\/?"]+)(?:\/artworks)?$/,
+      chipCss: ['a[href*="/tags/"]'],
       buildUrl: (vals) => 'https://www.pixiv.net/tags/' + vals.join('%20') + '/artworks'
     },
     { id: 'artstation', label: 'ArtStation', category: 'art', status: 'research',
@@ -319,6 +338,7 @@
       evidence: 'advanced search cross_list_category AND verified 2026-08-19: cs.LG 139,718 ∩ stat.ML 58,104 → 11,552; chips /list/CODE/... on abs pages',
       host: /(^|\.)arxiv\.org$/, path: /^\/abs\//,
       tagPattern: /^\/list\/([a-z-]+(?:\.[A-Z]{2})?)\//,
+      chipCss: ['a[href^="/list/"]'],
       buildUrl(vals) {
         const terms = vals.map((v, i) =>
           'terms-' + i + '-operator=AND&terms-' + i + '-term=' + enc(v) + '&terms-' + i + '-field=cross_list_category');
@@ -330,6 +350,7 @@
       evidence: '?term=A[MeSH] AND B[MeSH] verified 2026-08-19: Neoplasms 4,282,732 ∩ Apoptosis 372,314 → 149,069; MeSH chips are <button> elements on article pages',
       host: /(^|\.)pubmed\.ncbi\.nlm\.nih\.gov$/, path: /^\/\d+\/?$/,
       chipSelector: '#mesh-terms button.keyword-actions-trigger',
+      chipCss: ['button.keyword-actions-trigger'],
       extractValue: (el) => (el.textContent || '').trim().replace(/\*$/, '') || null,
       buildUrl: (vals) => 'https://pubmed.ncbi.nlm.nih.gov/?term=' + enc(vals.map(v => '"' + v + '"[MeSH Terms]').join(' AND '))
     },
@@ -464,6 +485,35 @@
     )].sort();
   }
 
+  // Sites deliberately matched by domain alone, with a reason. Chrome's
+  // declarativeContent css matcher only counts *displayed* elements, so a
+  // site that hides its chips at some viewport widths would produce a
+  // false-negative grey icon on a narrow window — worse than being slightly
+  // over-eager, because the extension genuinely does work there.
+  const CSS_MATCH_EXEMPT = {
+    'github.com': 'topics live in the About sidebar, which GitHub hides below ~1000px (hide-sm hide-md) — verified live 2026-08-23; a css rule would grey the icon on narrow windows even though the extension works'
+  };
+
+  // Per-page icon rules: which (domain, css) pairs should light the icon.
+  // `css: null` means "match on domain alone" (see CSS_MATCH_EXEMPT).
+  // Selectors must be COMPOUND (no combinators) — Chrome rejects the rest.
+  function iconRules() {
+    const rules = [];
+    for (const cfg of SITE_CATALOG) {
+      if (cfg.status !== 'verified') continue;
+      for (const domain of domainsOf(cfg)) {
+        if (CSS_MATCH_EXEMPT[domain]) {
+          rules.push({ domain, css: null, exemptReason: CSS_MATCH_EXEMPT[domain] });
+        } else if (cfg.chipCss && cfg.chipCss.length) {
+          for (const css of cfg.chipCss) rules.push({ domain, css });
+        } else {
+          rules.push({ domain, css: null });
+        }
+      }
+    }
+    return rules;
+  }
+
   function registerAll(MSQ) {
     if (!MSQ.registerAdapter || !MSQ.createSiteAdapter) return;
     for (const cfg of SITE_CATALOG) {
@@ -475,5 +525,5 @@
     }
   }
 
-  return { SITE_CATALOG, registerAll, ao3Unescape, domainsOf, verifiedDomains };
+  return { SITE_CATALOG, registerAll, ao3Unescape, domainsOf, verifiedDomains, iconRules, CSS_MATCH_EXEMPT };
 });

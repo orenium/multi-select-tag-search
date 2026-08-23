@@ -33,17 +33,29 @@ async function activeIconImageData() {
 
 async function installIconRules() {
   if (!chrome.declarativeContent) return; // icon simply stays in its muted state
-  const domains = (self.MSQ && self.MSQ.verifiedDomains) ? self.MSQ.verifiedDomains() : [];
-  if (domains.length === 0) return;
+  const rules = (self.MSQ && self.MSQ.iconRules) ? self.MSQ.iconRules() : [];
+  if (rules.length === 0) return;
 
   const imageData = await activeIconImageData();
   const conditions = [];
-  for (const domain of domains) {
+  for (const { domain, css } of rules) {
+    // Each matcher ANDs its own properties; the conditions array ORs the
+    // matchers. So (domain AND has-chips) per entry, any entry may fire.
+    //
+    // The `css` half is what makes this a per-PAGE check rather than a
+    // per-site one: Chrome tests those selectors against the rendered page
+    // locally and only reports that a rule fired — it still hands us no URL
+    // and no page content. Without it the icon lit up on every page of a
+    // supported domain, including ones with no tags at all (the IMDb
+    // homepage being the case that actually confused a user).
+    const base = css ? { css: [css] } : {};
     // hostEquals + '.'-prefixed hostSuffix so "notimdb.com" cannot match.
     conditions.push(new chrome.declarativeContent.PageStateMatcher({
+      ...base,
       pageUrl: { hostEquals: domain, schemes: ['https'] }
     }));
     conditions.push(new chrome.declarativeContent.PageStateMatcher({
+      ...base,
       pageUrl: { hostSuffix: '.' + domain, schemes: ['https'] }
     }));
   }
